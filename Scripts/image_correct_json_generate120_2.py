@@ -74,7 +74,7 @@ value is list consisting of the file path and the band number.
 
 config_dict['export'] = {}
 config_dict['export']['coeffs']  = True
-config_dict['export']['image']  = False
+config_dict['export']['image']  = True
 config_dict['export']['masks']  = False
 config_dict['export']['subset_waves']  = [660,550,440,850]
 config_dict['export']['output_dir'] = export_dir
