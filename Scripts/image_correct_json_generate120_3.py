@@ -98,7 +98,7 @@ Options include:
 
 '''
 
-config_dict["corrections"]  = []
+config_dict["corrections"]  = ['topo','brdf']
 
 #Topographic Correction options
 #################################################################
