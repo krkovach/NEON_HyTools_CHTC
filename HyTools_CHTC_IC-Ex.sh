@@ -47,6 +47,12 @@ traitmodels=trait_models
 tar -xf trait_models.tar -C trait_models/ #Subset Traits
 #tar -xzf trait_models.tar.gz -C trait_models/ #Full Traits
 
+#-----Pre-Process-----
+
+#Download
+python ./data_pull.py $site $date $flightdate $(pwd) $flightnamefolder
+python ./data_pull.py $site $date2 $flightdate $(pwd) $flightnamefolder
+
 #Run Scripts 1
 filelist=$(column -s, -t < NEON_Use_Lines.txt | awk -v var="$flightname" '($1 == var)')
 linklist=$(awk -F' ' '{print$2}' <<< "$filelist")
@@ -82,7 +88,6 @@ python ./trait_estimate.py trait_config_$flightname.json
 mv coeffs/*.json jsons/
 
 #-----Consolidate Outputs-----
-
 
 
 
