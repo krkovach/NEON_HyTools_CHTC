@@ -1,6 +1,4 @@
-# Set Env Variables
-#####################################
-
+#-----Initiate-----
 username=kovach3
 
 ENVNAME=py365ht120
@@ -14,8 +12,7 @@ month2=$(expr $month + 1)
 date="${year}-${month}"
 date2="${year}-0${month2}"
 
-# Set Environment
-#####################################
+#-----Environment-----
 
 cp /staging/$username/support/NEON/$ENVNAME.tar.gz ./
 
@@ -27,8 +24,7 @@ export PATH=$(pwd)/$ENVDIR:$(pwd)/$ENVDIR/lib:$(pwd)/$ENVDIR/share:$PATH
 
 . $ENVDIR/bin/activate
 
-# Initial Processing Steps
-#####################################
+#-----Prep and Download-----
 
 mkdir coeffs/
 mkdir imagery/
@@ -41,11 +37,10 @@ cp /staging/$username/support/NEON/data_pull.py ./
 cp /staging/$username/support/NEON/image_correct120.py ./
 cp /staging/$username/support/NEON/image_correct_json_generate120_1.py ./
 cp /staging/$username/support/NEON/image_correct_json_generate120_2.py ./
-cp /staging/$username/support/NEON/image_correct_json_generate120_3.py ./
 cp /staging/$username/support/NEON/NEON_Use_Lines.txt ./
 cp /staging/$username/support/NEON/trait_estimate.py ./
 cp /staging/$username/support/NEON/trait_estimate_json_generate.py ./
-cp /staging/$username/support/NEON/trait_models.tar ./ #Subset Traits
+cp /staging/$username/support/NEON/trait_models.tar ./ #Trait Subset
 
 mkdir jsons/
 mkdir traits/
@@ -54,12 +49,14 @@ traitmodels=trait_models
 tar -xf trait_models.tar -C trait_models/ #Subset Traits
 #tar -xzf trait_models.tar.gz -C trait_models/ #Full Traits
 
-python ./data_pull.py $site $date $flightdate $(pwd) $flightnamefolder
+#-----Pre-Process-----
 
+#Download
+python ./data_pull.py $site $date $flightdate $(pwd) $flightnamefolder
 python ./data_pull.py $site $date2 $flightdate $(pwd) $flightnamefolder
 
+#Run Scripts 1
 python ./image_correct_json_generate120_1.py $flightname $flightnamefolder $(pwd)
-
 python ./image_correct120.py ic_config_$flightname.json
 
 filelist=$(column -s, -t < NEON_Use_Lines.txt | awk -v var="$flightname" '($1 == var)')
@@ -68,8 +65,8 @@ linklist=$(echo $linklist | tr -d '\r')
 
 for g in $linklist; do mv $flightnamefolder/$g $brdffolder; done
 
+#Run Scripts 2
 python ./image_correct_json_generate120_2.py $flightname $brdffolder $(pwd)
-
 python ./image_correct120.py ic_config_$flightname.json
 
 brdfaddfiles=$(diff -q $flightnamefolder $brdffolder | grep $flightnamefolder | awk '{print substr( $4,1,length($4)-3)}')
@@ -78,21 +75,15 @@ difflist=$(echo $difflist | tr -d '\r')
 brdffile=`ls -d -1 "coeffs/"*brdf_coeffs_.* | head -1`
 
 for i in $difflist; do cp $brdffile "coeffs/"$i"_brdf_coeffs_.json"; done
-
 mv $brdffolder/* $flightnamefolder
 
-python ./image_correct_json_generate120_3.py $flightname $flightnamefolder $(pwd)
-
-python ./image_correct120.py ic_config_$flightname.json 
-
+#Run Traits
 python ./trait_estimate_json_generate.py $flightname $flightnamefolder $(pwd)
-
 python ./trait_estimate.py trait_config_$flightname.json
 
 mv coeffs/*.json jsons/
 
-# Handle and Resort Output
-#####################################
+#-----Consolidate Outputs-----
 
 rm -rf $flightnamefolder
 
