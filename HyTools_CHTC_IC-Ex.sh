@@ -13,7 +13,6 @@ date="${year}-${month}"
 date2="${year}-0${month2}"
 
 #-----Environment-----
-
 cp /staging/$username/support/NEON/$ENVNAME.tar.gz ./
 
 mkdir $ENVDIR
@@ -21,7 +20,6 @@ tar -xzf $ENVNAME.tar.gz -C $ENVDIR
 rm $ENVNAME.tar.gz
 
 export PATH=$(pwd)/$ENVDIR:$(pwd)/$ENVDIR/lib:$(pwd)/$ENVDIR/share:$PATH
-
 . $ENVDIR/bin/activate
 
 #-----Prep and Download-----
@@ -49,32 +47,32 @@ traitmodels=trait_models
 tar -xf trait_models.tar -C trait_models/ #Subset Traits
 #tar -xzf trait_models.tar.gz -C trait_models/ #Full Traits
 
-#-----Pre-Process-----
-
-#Download
-python ./data_pull.py $site $date $flightdate $(pwd) $flightnamefolder
-python ./data_pull.py $site $date2 $flightdate $(pwd) $flightnamefolder
-
 #Run Scripts 1
-python ./image_correct_json_generate120_1.py $flightname $flightnamefolder $(pwd)
-python ./image_correct120.py ic_config_$flightname.json
-
 filelist=$(column -s, -t < NEON_Use_Lines.txt | awk -v var="$flightname" '($1 == var)')
 linklist=$(awk -F' ' '{print$2}' <<< "$filelist")
 linklist=$(echo $linklist | tr -d '\r')
 
 for g in $linklist; do mv $flightnamefolder/$g $brdffolder; done
 
-#Run Scripts 2
-python ./image_correct_json_generate120_2.py $flightname $brdffolder $(pwd)
+python ./image_correct_json_generate120_1.py $flightname $brdffolder $(pwd)
+cp ic_config_$flightname.json ic_config_BRDF_$flightname.json
 python ./image_correct120.py ic_config_$flightname.json
 
+#Run Scripts 2
+if [ -d "$flightnamefolder" ] && [ -z "$(ls -A "$flightnamefolder")" ]; then
+    :
+else
+    python ./image_correct_json_generate120_2.py $flightname $flightnamefolder $(pwd)
+    python ./image_correct120.py ic_config_$flightname.json
+fi
+
+#Check for missing BRDF files
 brdfaddfiles=$(diff -q $flightnamefolder $brdffolder | grep $flightnamefolder | awk '{print substr( $4,1,length($4)-3)}')
 difflist=$(awk -F' ' '{print$1}' <<< "$brdfaddfiles")
 difflist=$(echo $difflist | tr -d '\r')
-brdffile=`ls -d -1 "coeffs/"*brdf_coeffs_.* | head -1`
+brdffile=`ls -d -1 "coeffs/"*brdf_coeffs_kkovach.* | head -1`
 
-for i in $difflist; do cp $brdffile "coeffs/"$i"_brdf_coeffs_.json"; done
+for i in $difflist; do cp $brdffile "coeffs/"$i"_brdf_coeffs_kkovach.json"; done
 mv $brdffolder/* $flightnamefolder
 
 #Run Traits
@@ -84,6 +82,18 @@ python ./trait_estimate.py trait_config_$flightname.json
 mv coeffs/*.json jsons/
 
 #-----Consolidate Outputs-----
+
+
+
+
+
+
+
+
+
+
+
+
 
 rm -rf $flightnamefolder
 
