@@ -74,11 +74,11 @@ value is list consisting of the file path and the band number.
 
 config_dict['export'] = {}
 config_dict['export']['coeffs']  = True
-config_dict['export']['image']  = True
+config_dict['export']['image']  = False
 config_dict['export']['masks']  = False
 config_dict['export']['subset_waves']  = [660,550,440,850]
 config_dict['export']['output_dir'] = export_dir
-config_dict['export']["suffix"] = ''
+config_dict['export']["suffix"] = 'kkovach'
 
 #Corrections
 #################################################################
@@ -97,7 +97,7 @@ Options include:
 
 '''
 
-config_dict["corrections"]  = ['topo','brdf']
+config_dict["corrections"]  = ['topo']
 
 #Topographic Correction options
 #################################################################
@@ -122,28 +122,30 @@ dictionary where each key is the full the image path and value
 is the full path to coefficients file, one per image.
 '''
 config_dict["topo"] =  {}
-# config_dict["topo"]['type'] =  'scs+c'
-# config_dict["topo"]['calc_mask'] = [["ndi", {'band_1': 850,'band_2': 660,
-                                             # 'min': 0.1,'max': 1.0}],
-                                    # ['ancillary',{'name':'slope',
-                                                  # 'min': np.radians(5),'max':'+inf' }],
-                                    # ['ancillary',{'name':'cosine_i',
-                                                  # 'min': 0.12,'max':'+inf' }],
-                                    # ['cloud',{'method':'zhai_2018',
-                                              # 'cloud':True,'shadow':True,
-                                              # 'T1': 1,'t2': .5,'t3': 1/3,
-                                              # 't4': 2/3,'T7': 15,'T8': 15}]]
+config_dict["topo"]['type'] =  'scs+c'
+config_dict["topo"]['calc_mask'] = [["ndi", {'band_1': 850,'band_2': 660,
+                                             'min': 0.1,'max': 1.0}],
+                                    ['ancillary',{'name':'slope',
+                                                  'min': np.radians(5),'max':'+inf' }],
+                                    ['ancillary',{'name':'cosine_i',
+                                                  'min': 0.12,'max':'+inf' }],
+                                    ['cloud',{'method':'zhai_2018',
+                                              'cloud':True,'shadow':True,
+                                              'T1': 1,'t2': .5,'t3': 1/3,
+                                              't4': 2/3,'T7': 15,'T8': 15}]]
 
-# config_dict["topo"]['apply_mask'] = [["ndi", {'band_1': 850,'band_2': 660,
-                                             # 'min': 0.1,'max': 1.0}],
-                                    # ['ancillary',{'name':'slope',
-                                                  # 'min': np.radians(5),'max':'+inf' }],
-                                    # ['ancillary',{'name':'cosine_i',
-                                                  # 'min': 0.12,'max':'+inf' }]]
-# config_dict["topo"]['c_fit_type'] = 'nnls'
+config_dict["topo"]['apply_mask'] = [["ndi", {'band_1': 850,'band_2': 660,
+                                             'min': 0.1,'max': 1.0}],
+                                    ['ancillary',{'name':'slope',
+                                                  'min': np.radians(5),'max':'+inf' }],
+                                    ['ancillary',{'name':'cosine_i',
+                                                  'min': 0.12,'max':'+inf' }]]
+config_dict["topo"]['c_fit_type'] = 'nnls'
 
-config_dict["topo"]['type'] =  'precomputed'
-config_dict["topo"]['coeff_files'] =  glob.glob(os.path.join(export_dir,"*topo_coeffs_.json"))
+# config_dict["topo"]['type'] =  'precomputed'
+# topo_files = glob.glob("coeffs/*topo_coeffs_kkovach.json")
+# topo_files.sort()
+# config_dict["topo"]['coeff_files'] =  dict(zip(images,topo_files))
 
 #BRDF Correction options
 #################################################################3
@@ -227,7 +229,9 @@ config_dict["brdf"]['ndvi_perc_max'] = 95
 ## Precomputed BRDF coefficients
 ##------------------------------
 # config_dict["brdf"]['type'] =  'precomputed'
-# config_dict["brdf"]['coeff_files'] =  {}
+# brdf_files = glob.glob("coeffs/*brdf_coeffs_kkovach.json")
+# brdf_files.sort()
+# config_dict["brdf"]['coeff_files'] =  dict(zip(images,brdf_files))
 ##------------------------------
 
 #Glint Correction options

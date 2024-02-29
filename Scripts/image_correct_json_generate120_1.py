@@ -78,7 +78,7 @@ config_dict['export']['image']  = False
 config_dict['export']['masks']  = False
 config_dict['export']['subset_waves']  = [660,550,440,850]
 config_dict['export']['output_dir'] = export_dir
-config_dict['export']["suffix"] = ''
+config_dict['export']["suffix"] = 'kkovach'
 
 #Corrections
 #################################################################
@@ -97,7 +97,7 @@ Options include:
 
 '''
 
-config_dict["corrections"]  = ['topo']
+config_dict["corrections"]  = ['topo','brdf']
 
 #Topographic Correction options
 #################################################################
@@ -143,7 +143,9 @@ config_dict["topo"]['apply_mask'] = [["ndi", {'band_1': 850,'band_2': 660,
 config_dict["topo"]['c_fit_type'] = 'nnls'
 
 # config_dict["topo"]['type'] =  'precomputed'
-# config_dict["brdf"]['coeff_files'] =  {}
+# topo_files = glob.glob("coeffs/*topo_coeffs_kkovach.json")
+# topo_files.sort()
+# config_dict["topo"]['coeff_files'] =  dict(zip(images,topo_files))
 
 #BRDF Correction options
 #################################################################3
@@ -227,7 +229,9 @@ config_dict["brdf"]['ndvi_perc_max'] = 95
 ## Precomputed BRDF coefficients
 ##------------------------------
 # config_dict["brdf"]['type'] =  'precomputed'
-# config_dict["brdf"]['coeff_files'] =  {}
+# brdf_files = glob.glob("coeffs/*brdf_coeffs_kkovach.json")
+# brdf_files.sort()
+# config_dict["brdf"]['coeff_files'] =  dict(zip(images,brdf_files))
 ##------------------------------
 
 #Glint Correction options

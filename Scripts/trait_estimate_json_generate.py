@@ -64,11 +64,11 @@ config_dict['num_cpus'] = len(images)
 
 config_dict['corrections'] = ['topo','brdf']
 
-topo_files = glob.glob("coeffs/*topo_coeffs_.json")
+topo_files = glob.glob("coeffs/*topo_coeffs_kkovach.json")
 topo_files.sort()
 config_dict["topo"] =  dict(zip(images,topo_files))
 
-brdf_files = glob.glob("coeffs/*_brdf_coeffs_.json")
+brdf_files = glob.glob("coeffs/*_brdf_coeffs_kkovach.json")
 brdf_files.sort()
 config_dict["brdf"] =  dict(zip(images,brdf_files))
 
